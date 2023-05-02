@@ -5,8 +5,9 @@ import config from 'config'
 import { ogg } from './ogg.js'
 import { openAI } from './openAI.js'
 
-const bot = new Telegraf(config.get('TG_TOKEN'))
 console.log(config.get('TEST_ENV'))
+
+const bot = new Telegraf(config.get('TG_TOKEN'))
 
 const INITIAL_SESSION = {
     messages: []
@@ -21,17 +22,13 @@ bot.command('start', async (ctx) => {
 
 bot.command('new', async (ctx) => {
     ctx.session = INITIAL_SESSION 
-    await ctx.reply('Жду сообщение ')
+    await ctx.reply('Ask me ')
 })
-
-// bot.on(message('text'), async (context) => {
-//     await context.reply(JSON.stringify(context.message, null, 2 ))
-// })
 
 bot.on(message('voice'), async (ctx) => {
     ctx.session ??= INITIAL_SESSION
     try {
-        await ctx.reply(code('Кого ебет чужое горе...?'))
+        await ctx.reply(code('Loading...'))
         const link = await ctx.telegram.getFileLink(ctx.message.voice.file_id)
         const userId = String(ctx.message.from.id)
         const oggPath = await ogg.create(link.href, userId)
@@ -56,7 +53,7 @@ bot.on(message('voice'), async (ctx) => {
 bot.on(message('text'), async (ctx) => {
     ctx.session ??= INITIAL_SESSION
     try {
-        await ctx.reply(code('Кого ебет чужое горе...?'))
+        await ctx.reply(code('Loading...'))
         ctx.session.messages.push({
             role: openAI.roles.USER,
             content: ctx.message.text
@@ -68,7 +65,7 @@ bot.on(message('text'), async (ctx) => {
         })
         await ctx.reply(response.content)
     } catch (e) {
-        console.error('>>> in voice message', e.message)
+        console.error('>>> in text message', e.message)
     }
 })
 
