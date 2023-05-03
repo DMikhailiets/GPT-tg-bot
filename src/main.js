@@ -17,7 +17,7 @@ bot.use(session())
 
 bot.command('start', async (ctx) => {
     ctx.session = INITIAL_SESSION 
-    await context.reply(JSON.stringify(ctx.message, null, 2 ))
+    await ctx.reply('Ask me ')
 })
 
 bot.command('new', async (ctx) => {
